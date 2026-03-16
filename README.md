@@ -53,7 +53,7 @@ constants/
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/Erick-Limaa/churrascometro.git
+git clone https://github.com/Erick-Limaa/Churrascometro.git
 cd churrascometro
 
 # 2. Instale as dependências
