@@ -53,8 +53,8 @@ constants/
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/SEU_USUARIO/churrascomentro.git
-cd churrascomentro
+git clone https://github.com/Erick-Limaa/churrascometro.git
+cd churrascometro
 
 # 2. Instale as dependências
 npm install
