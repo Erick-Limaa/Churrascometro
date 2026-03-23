@@ -1,11 +1,12 @@
 import React, { useState, useCallback } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, FlatList,
-  StatusBar, Alert, Vibration, KeyboardAvoidingView, Platform,
+  StatusBar, Alert, Vibration, KeyboardAvoidingView,
+  Platform, Modal, StyleSheet,
 } from 'react-native';
 import TopBar from '../components/TopBar';
 import { S } from '../constants/styles';
-import { Convidado, Categoria, CAT_CONFIG } from '../constants';
+import { C, Convidado, Categoria, CAT_CONFIG } from '../constants';
 
 type Props = {
   nomeEvento: string;
@@ -13,10 +14,43 @@ type Props = {
   onAvancar: (convidados: Convidado[]) => void;
 };
 
+// ── Estilos locais (declarados fora do componente para evitar erro de referência) ──
+const ls = StyleSheet.create({
+  editHint: { color: '#4a2a10', fontSize: 9, marginTop: 1 },
+  modalOverlay: {
+    flex: 1, backgroundColor: '#000000aa',
+    justifyContent: 'center', alignItems: 'center',
+  },
+  modalBox: {
+    backgroundColor: '#2d1a0a', borderRadius: 16,
+    padding: 24, width: '85%', borderWidth: 1, borderColor: C.brasa,
+  },
+  modalTitle: { color: C.brasa2, fontWeight: '800', fontSize: 16, marginBottom: 14 },
+  modalInput: {
+    backgroundColor: '#1a0a00', borderRadius: 10,
+    paddingHorizontal: 14, paddingVertical: 12,
+    color: '#fff4e6', fontSize: 16,
+    borderWidth: 1, borderColor: '#5a3010', marginBottom: 16,
+  },
+  modalBtns: { flexDirection: 'row', gap: 10 },
+  modalBtnCancel: {
+    flex: 1, paddingVertical: 12, borderRadius: 10,
+    borderWidth: 1, borderColor: '#5a3010', alignItems: 'center',
+  },
+  modalBtnCancelText: { color: '#8a6a50', fontWeight: '700' },
+  modalBtnOk: {
+    flex: 1, paddingVertical: 12, borderRadius: 10,
+    backgroundColor: C.brasa, alignItems: 'center',
+  },
+  modalBtnOkText: { color: '#fff', fontWeight: '800' },
+});
+
 export default function ConvidadosScreen({ nomeEvento, onVoltar, onAvancar }: Props) {
   const [novoConvidado, setNovoConvidado] = useState('');
   const [catSelecionada, setCatSelecionada] = useState<Categoria>('adulto');
   const [convidados, setConvidados] = useState<Convidado[]>([]);
+  const [editando, setEditando] = useState<Convidado | null>(null);
+  const [nomeEditado, setNomeEditado] = useState('');
 
   const adicionarConvidado = useCallback(() => {
     const nome = novoConvidado.trim();
@@ -31,11 +65,27 @@ export default function ConvidadosScreen({ nomeEvento, onVoltar, onAvancar }: Pr
     setConvidados(prev => prev.filter(c => c.id !== id));
   }, []);
 
+  const abrirEdicao = useCallback((c: Convidado) => {
+    setEditando(c);
+    setNomeEditado(c.nome);
+  }, []);
+
+  const salvarEdicao = useCallback(() => {
+    const nome = nomeEditado.trim();
+    if (!nome) { Alert.alert('Atenção', 'O nome não pode ser vazio!'); return; }
+    setConvidados(prev => prev.map(c => c.id === editando?.id ? { ...c, nome } : c));
+    setEditando(null);
+    Vibration.vibrate(40);
+  }, [editando, nomeEditado]);
+
   const renderItem = useCallback(({ item, index }: { item: Convidado; index: number }) => (
     <View style={S.convidadoRow}>
       <Text style={[S.convidadoIndex, { color: CAT_CONFIG[item.categoria].cor }]}>{index + 1}</Text>
       <Text style={S.convidadoEmoji}>{CAT_CONFIG[item.categoria].emoji}</Text>
-      <Text style={S.convidadoNome}>{item.nome}</Text>
+      <TouchableOpacity style={{ flex: 1 }} onPress={() => abrirEdicao(item)} activeOpacity={0.7}>
+        <Text style={S.convidadoNome}>{item.nome}</Text>
+        <Text style={ls.editHint}>toque para editar</Text>
+      </TouchableOpacity>
       <Text style={[S.convidadoCat, { color: CAT_CONFIG[item.categoria].cor }]}>
         {CAT_CONFIG[item.categoria].label}
       </Text>
@@ -43,7 +93,7 @@ export default function ConvidadosScreen({ nomeEvento, onVoltar, onAvancar }: Pr
         <Text style={S.removeBtn}>✕</Text>
       </TouchableOpacity>
     </View>
-  ), [removerConvidado]);
+  ), [removerConvidado, abrirEdicao]);
 
   const header = (
     <>
@@ -135,6 +185,33 @@ export default function ConvidadosScreen({ nomeEvento, onVoltar, onAvancar }: Pr
           renderItem={renderItem}
         />
       </View>
+
+      {/* Modal de edição */}
+      <Modal visible={!!editando} transparent animationType="fade">
+        <View style={ls.modalOverlay}>
+          <View style={ls.modalBox}>
+            <Text style={ls.modalTitle}>✏️ Editar nome</Text>
+            <TextInput
+              style={ls.modalInput}
+              value={nomeEditado}
+              onChangeText={setNomeEditado}
+              placeholder="Nome do convidado"
+              placeholderTextColor="#8a6a50"
+              autoFocus
+              onSubmitEditing={salvarEdicao}
+              returnKeyType="done"
+            />
+            <View style={ls.modalBtns}>
+              <TouchableOpacity style={ls.modalBtnCancel} onPress={() => setEditando(null)}>
+                <Text style={ls.modalBtnCancelText}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={ls.modalBtnOk} onPress={salvarEdicao}>
+                <Text style={ls.modalBtnOkText}>Salvar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   );
 }
