@@ -284,7 +284,7 @@ export default function CardapioScreen({ convidados, onVoltar, onCalcular }: Pro
     <View style={S.flex1}>
       <StatusBar backgroundColor="#1a0a00" barStyle="light-content" />
       <View style={S.container}>
-        <TopBar titulo="⚙️ Cardápio" onVoltar={onVoltar} />
+        <TopBar titulo="📖 Cardápio" onVoltar={onVoltar} />
 
         <ScrollView
           contentContainerStyle={{ padding: 14, paddingBottom: 120 }}
