@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import HomeScreen from '../screens/HomeScreen';
 import ConvidadosScreen from '../screens/ConvidadosScreen';
-import CardapioScreen from '../screens/CardapioScreen';
+import CardapioScreen, { CategoriaComSub } from '../screens/CardapioScreen';
 import ResultadoScreen from '../screens/ResultadoScreen';
 import HistoricoScreen from '../screens/HistoricoScreen';
 
@@ -20,7 +20,6 @@ export default function Index() {
   const [nomeEvento, setNomeEvento] = useState('');
   const [verba, setVerba] = useState('');
   const [convidados, setConvidados] = useState<Convidado[]>([]);
-  const [cardapio, setCardapio] = useState<ItemCardapio[]>([]);
   const [resultado, setResultado] = useState<ResultadoCalculo | null>(null);
   const [historico, setHistorico] = useState<Churras[]>([]);
 
@@ -36,18 +35,13 @@ export default function Index() {
   const salvarNoHistorico = async (res: ResultadoCalculo, nome: string) => {
     try {
       const novo: Churras = {
-        id: Date.now().toString(),
-        nome,
+        id: Date.now().toString(), nome,
         data: new Date().toLocaleDateString('pt-BR'),
         totalPessoas: res.total,
-        adultos: res.adultos,
-        criancas: res.criancas,
-        vegetarianos: res.vegetarianos,
+        adultos: res.adultos, criancas: res.criancas, vegetarianos: res.vegetarianos,
         custoEstimado: res.custoEstimado,
-        verba: res.verba,
-        verbaDefined: res.verbaDefined,
-        saldo: res.saldo,
-        rateio: res.rateio,
+        verba: res.verba, verbaDefined: res.verbaDefined,
+        saldo: res.saldo, rateio: res.rateio,
       };
       const lista = [novo, ...historico].slice(0, 20);
       setHistorico(lista);
@@ -60,29 +54,48 @@ export default function Index() {
     await AsyncStorage.removeItem(STORAGE_KEY);
   };
 
-  // ── Calcular ─────────────────────────────────────────────────────────────
-  const calcular = (cardapioAtual: ItemCardapio[]) => {
-    setCardapio(cardapioAtual);
-
+  // ── Calcular ──────────────────────────────────────────────────────────────
+  const calcular = (cardapioSimples: ItemCardapio[], categorias: CategoriaComSub[]) => {
     const adultos      = convidados.filter(c => c.categoria === 'adulto').length;
     const criancas     = convidados.filter(c => c.categoria === 'crianca').length;
     const vegetarianos = convidados.filter(c => c.categoria === 'vegetariano').length;
-    const totalEquivalente = adultos * 1.0 + criancas * 0.5 + vegetarianos * 1.0;
-    const total = convidados.length;
+    const totalEq      = adultos * 1.0 + criancas * 0.5 + vegetarianos * 1.0;
+    const total        = convidados.length;
 
-    const itensCalculados = cardapioAtual.filter(i => i.ativo).map(item => {
-      let qtd: number;
-      if (item.manual != null) {
-        qtd = item.manual;
-      } else {
-        const base = ['carne', 'linguica'].includes(item.id)
-          ? (adultos + criancas * 0.5) * item.qtdPorPessoa
-          : totalEquivalente * item.qtdPorPessoa;
-        qtd = base;
-      }
+    // ── Itens de carne com subitens ────────────────────────────────────────
+    const itensCarne: any[] = [];
+    categorias.forEach(cat => {
+      if (!cat.ativo) return;
+      cat.subitens.filter(s => s.selecionado).forEach(sub => {
+        // vegetarianos não recebem bovinos e linguiça
+        const baseEq = (cat.id === 'bovinos' || cat.id === 'linguica')
+          ? adultos + criancas * 0.5
+          : totalEq;
 
+        const qtdG = sub.manual != null
+          ? sub.manual * 1000
+          : baseEq * sub.qtdPorPessoa;
+
+        const qtdKg = qtdG / 1000;
+        const custo = qtdKg * sub.preco;
+
+        itensCarne.push({
+          id: sub.id,
+          emoji: cat.emoji,
+          label: `${sub.label}`,
+          qtdCalculada: qtdG,
+          qtdDisplay: `${qtdKg.toFixed(1)} kg`,
+          custo,
+          categoria: cat.label,
+        });
+      });
+    });
+
+    // ── Itens simples ──────────────────────────────────────────────────────
+    const itensSimples = cardapioSimples.filter(i => i.ativo).map(item => {
+      const qtd = item.qtdPorPessoa * totalEq;
       let qtdDisplay = '';
-      if (item.unidade === 'g')    qtdDisplay = qtd >= 1000 ? `${(qtd / 1000).toFixed(1)} kg` : `${Math.ceil(qtd)} g`;
+      if (item.unidade === 'g')    qtdDisplay = qtd >= 1000 ? `${(qtd/1000).toFixed(1)} kg` : `${Math.ceil(qtd)} g`;
       else if (item.unidade === 'L')    qtdDisplay = `${qtd.toFixed(1)} L`;
       else if (item.unidade === 'lata') qtdDisplay = `${Math.ceil(qtd)} latas`;
       else if (item.unidade === 'pct')  qtdDisplay = `${Math.ceil(qtd)} pct`;
@@ -96,13 +109,14 @@ export default function Index() {
       return { ...item, qtdCalculada: qtd, qtdDisplay, custo };
     });
 
-    const custoTotal    = itensCalculados.reduce((s, i) => s + i.custo, 0);
+    const todosItens = [...itensCarne, ...itensSimples];
+    const custoTotal    = todosItens.reduce((s, i) => s + i.custo, 0);
     const verbaNumerica = parseFloat(verba.replace(',', '.')) || 0;
     const saldo         = verbaNumerica - custoTotal;
 
     const res: ResultadoCalculo = {
       total, adultos, criancas, vegetarianos,
-      itens: itensCalculados,
+      itens: todosItens,
       custoEstimado: custoTotal.toFixed(2),
       verba: verbaNumerica.toFixed(2),
       saldo: saldo.toFixed(2),
@@ -118,11 +132,8 @@ export default function Index() {
   };
 
   const resetar = () => {
-    setNomeEvento('');
-    setVerba('');
-    setConvidados([]);
-    setCardapio([]);
-    setResultado(null);
+    setNomeEvento(''); setVerba('');
+    setConvidados([]); setResultado(null);
     setTela('home');
   };
 
@@ -136,7 +147,6 @@ export default function Index() {
           onHistorico={() => setTela('historico')}
         />
       );
-
     case 'convidados':
       return (
         <ConvidadosScreen
@@ -145,7 +155,6 @@ export default function Index() {
           onAvancar={(lista) => { setConvidados(lista); setTela('cardapio'); }}
         />
       );
-
     case 'cardapio':
       return (
         <CardapioScreen
@@ -154,7 +163,6 @@ export default function Index() {
           onCalcular={calcular}
         />
       );
-
     case 'resultado':
       return resultado ? (
         <ResultadoScreen
@@ -165,7 +173,6 @@ export default function Index() {
           onNovoChurras={resetar}
         />
       ) : null;
-
     case 'historico':
       return (
         <HistoricoScreen
@@ -174,7 +181,6 @@ export default function Index() {
           onLimpar={limparHistorico}
         />
       );
-
     default:
       return null;
   }
