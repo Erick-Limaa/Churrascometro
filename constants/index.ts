@@ -31,6 +31,8 @@ export type Churras = {
   verbaDefined: boolean;
   saldo: string;
   rateio: string;
+  itens: any[];
+  comprados: Record<string, boolean>;
 };
 
 export type ResultadoCalculo = {

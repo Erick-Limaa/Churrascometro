@@ -42,6 +42,8 @@ export default function Index() {
         custoEstimado: res.custoEstimado,
         verba: res.verba, verbaDefined: res.verbaDefined,
         saldo: res.saldo, rateio: res.rateio,
+        itens: res.itens,
+        comprados: {},
       };
       const lista = [novo, ...historico].slice(0, 20);
       setHistorico(lista);
@@ -179,6 +181,7 @@ export default function Index() {
           historico={historico}
           onVoltar={() => setTela('home')}
           onLimpar={limparHistorico}
+          onAtualizarHistorico={setHistorico}
         />
       );
     default:
