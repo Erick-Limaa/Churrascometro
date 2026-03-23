@@ -65,7 +65,7 @@ const CATEGORIAS_COM_SUB: CategoriaComSub[] = [
   },
 ];
 
-// ── Chevron animado ───────────────────────────────────────────────────────────
+// ── Setinha animada ───────────────────────────────────────────────────────────
 function ChevronAnimado({ expandido }: { expandido: boolean }) {
   const rotacao = useRef(new Animated.Value(expandido ? 1 : 0)).current;
 
