@@ -10,11 +10,11 @@ import { C, Convidado, Categoria, CAT_CONFIG } from '../constants';
 
 type Props = {
   nomeEvento: string;
+  convidadosIniciais: Convidado[];  // preserva o progresso
   onVoltar: () => void;
   onAvancar: (convidados: Convidado[]) => void;
 };
 
-// ── Estilos locais (declarados fora do componente para evitar erro de referência) ──
 const ls = StyleSheet.create({
   editHint: { color: '#4a2a10', fontSize: 9, marginTop: 1 },
   modalOverlay: {
@@ -45,10 +45,11 @@ const ls = StyleSheet.create({
   modalBtnOkText: { color: '#fff', fontWeight: '800' },
 });
 
-export default function ConvidadosScreen({ nomeEvento, onVoltar, onAvancar }: Props) {
+export default function ConvidadosScreen({ nomeEvento, convidadosIniciais, onVoltar, onAvancar }: Props) {
+  // Inicializa com o estado preservado
   const [novoConvidado, setNovoConvidado] = useState('');
   const [catSelecionada, setCatSelecionada] = useState<Categoria>('adulto');
-  const [convidados, setConvidados] = useState<Convidado[]>([]);
+  const [convidados, setConvidados] = useState<Convidado[]>(convidadosIniciais);
   const [editando, setEditando] = useState<Convidado | null>(null);
   const [nomeEditado, setNomeEditado] = useState('');
 
@@ -97,7 +98,6 @@ export default function ConvidadosScreen({ nomeEvento, onVoltar, onAvancar }: Pr
 
   const header = (
     <>
-      {/* Seletor de categoria */}
       <View style={S.catRow}>
         {(Object.keys(CAT_CONFIG) as Categoria[]).map(cat => (
           <TouchableOpacity
@@ -113,7 +113,6 @@ export default function ConvidadosScreen({ nomeEvento, onVoltar, onAvancar }: Pr
         ))}
       </View>
 
-      {/* Resumo */}
       {convidados.length > 0 && (
         <View style={S.catResumo}>
           {(Object.keys(CAT_CONFIG) as Categoria[]).map(cat => {
@@ -128,7 +127,6 @@ export default function ConvidadosScreen({ nomeEvento, onVoltar, onAvancar }: Pr
         </View>
       )}
 
-      {/* Input */}
       <View style={S.addRow}>
         <TextInput
           style={S.inputAdd}
@@ -173,7 +171,6 @@ export default function ConvidadosScreen({ nomeEvento, onVoltar, onAvancar }: Pr
           direita={<Text style={S.topBarCount}>{convidados.length} 🥩</Text>}
         />
         <Text style={S.eventoNome}>{nomeEvento}</Text>
-
         <FlatList
           data={convidados}
           keyExtractor={i => i.id}
@@ -186,7 +183,6 @@ export default function ConvidadosScreen({ nomeEvento, onVoltar, onAvancar }: Pr
         />
       </View>
 
-      {/* Modal de edição */}
       <Modal visible={!!editando} transparent animationType="fade">
         <View style={ls.modalOverlay}>
           <View style={ls.modalBox}>
