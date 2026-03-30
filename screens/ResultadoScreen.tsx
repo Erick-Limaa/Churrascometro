@@ -22,6 +22,8 @@ type Props = {
   mensagem: string;
   setMensagem: (texto: string) => void;
   enviarChat: () => void;
+  digitando: boolean;
+  dots: string;
 };
 
 type Dica = { emoji: string; titulo: string; texto: string };
@@ -35,7 +37,8 @@ type Dica = { emoji: string; titulo: string; texto: string };
 // COMPONENTE PRINCIPAL
 // ═══════════════════════════════════════════════════════════════════════════
 export default function ResultadoScreen({
-  nomeEvento, convidados, resultado, onEditarCardapio, onNovoChurras, chat, mensagem, setMensagem, enviarChat,
+  nomeEvento, convidados, resultado, onEditarCardapio, onNovoChurras, chat, mensagem, setMensagem, enviarChat, digitando, dots,
+  
 }: Props) {
   const [nomeLocal, setNomeLocal] = useState(nomeEvento);
   const [editandoNome, setEditandoNome] = useState(false);
@@ -183,12 +186,19 @@ export default function ResultadoScreen({
                   ]}
                 >
                   <Text style={ls.chatAutor}>
-                    {item.role === 'user' ? 'Você' : 'IA'}
+                    {item.role === 'user' ? 'Você' : 'Mestre do Churras'}
                   </Text>
                   <Text style={ls.chatTexto}>{item.text}</Text>
                 </View>
               ))
             )}
+
+            {digitando && (
+             <View style={[ls.chatBubble, ls.chatBubbleBot]}>
+             <Text style={ls.chatAutor}>Mestre do Churras</Text>
+             <Text style={ls.chatTexto}>Digitando{dots}</Text>
+          </View>
+          )}
           </View>
 
           <TextInput

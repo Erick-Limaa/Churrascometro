@@ -30,6 +30,8 @@ export default function Index() {
   // CHAT
   const [chat, setChat] = useState<{ role: string; text: string }[]>([]);
   const [mensagem, setMensagem] = useState('');
+  const [digitando, setDigitando] = useState(false);
+  const [dots, setDots] = useState('.');
 
   const enviarChat = async () => {
   if (!mensagem.trim() || !resultado) return;
@@ -42,6 +44,7 @@ export default function Index() {
   ]);
 
   setMensagem('');
+  setDigitando(true);
 
   try {
     const carnesEscolhidas = resultado.itens
@@ -50,6 +53,17 @@ export default function Index() {
 
     const contexto = `
 Você é um assistente de churrasco.
+Responda em português do Brasil, com emojis.
+
+REGRAS IMPORTANTES:
+- Responda apenas em texto simples
+- Não use Markdown
+- Não use *
+- Não use **
+- Não use listas
+- Não use formatação
+
+Responda como se fosse uma mensagem normal de WhatsApp.
 
 Dados:
 Evento: ${nomeEvento}
@@ -71,18 +85,31 @@ ${texto}
       ...prev,
       { role: 'bot', text: 'Erro ao falar com a IA' }
     ]);
+  } finally {
+    setDigitando(false);
   }
 };
 
   const gerarDicasAutomaticas = async (resultadoAtual: ResultadoCalculo) => {
-  try {
+  setDigitando(true);
+    try {
     const carnesEscolhidas = resultadoAtual.itens
       .map((item: any) => `${item.label}: ${item.qtdDisplay}`)
       .join(', ');
 
     const prompt = `
 Você é um assistente de churrasco.
-Responda em português do Brasil, com emojis, sem usar asteriscos.
+Responda em português do Brasil, com emojis.
+
+REGRAS IMPORTANTES:
+- Responda apenas em texto simples
+- Não use Markdown
+- Não use *
+- Não use **
+- Não use listas
+- Não use formatação
+
+Responda como se fosse uma mensagem normal de WhatsApp.
 
 Dados:
 Evento: ${nomeEvento}
@@ -108,6 +135,8 @@ Dê dicas curtas sobre:
     setChat([
       { role: 'bot', text: 'Não consegui gerar as dicas automáticas agora 😢' }
     ]);
+    } finally {
+    setDigitando(false);
   }
 };
 
@@ -121,6 +150,19 @@ Dê dicas curtas sobre:
       if (raw) setHistorico(JSON.parse(raw));
     } catch {}
   };
+
+  useEffect(() => {
+  if (!digitando) {
+    setDots('.');
+    return;
+  }
+
+  const interval = setInterval(() => {
+    setDots((prev) => (prev.length >= 3 ? '.' : prev + '.'));
+  }, 500);
+
+  return () => clearInterval(interval);
+}, [digitando]);
 
   const salvarNoHistorico = async (res: ResultadoCalculo, nome: string) => {
     try {
@@ -294,6 +336,8 @@ Dê dicas curtas sobre:
           mensagem={mensagem}
           setMensagem={setMensagem}
           enviarChat={enviarChat}
+          digitando={digitando}
+          dots={dots}
         />
       ) : null;
 
