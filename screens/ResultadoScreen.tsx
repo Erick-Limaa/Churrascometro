@@ -174,7 +174,7 @@ export default function ResultadoScreen({
           <View style={ls.chatMensagens}>
             {chat.length === 0 ? (
               <Text style={ls.chatVazio}>
-                Pergunte algo como: "quantos kg de carne da pra 20 comer?"
+                Pergunte algo como: "quantos kg de carne da para 10 convidados?"
               </Text>
             ) : (
               chat.map((item, i) => (
