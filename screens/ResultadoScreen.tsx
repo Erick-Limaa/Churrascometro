@@ -174,7 +174,7 @@ export default function ResultadoScreen({
           <View style={ls.chatMensagens}>
             {chat.length === 0 ? (
               <Text style={ls.chatVazio}>
-                Pergunte algo como: "quantos kg de carne da para 10 convidados?"
+                Pergunte algo como: "Como posso temperar a asinha de frango?"
               </Text>
             ) : (
               chat.map((item, i) => (
@@ -219,7 +219,7 @@ export default function ResultadoScreen({
           <Text style={S.btnShareText}>📤 Compartilhar via WhatsApp</Text>
         </TouchableOpacity>
         <TouchableOpacity style={S.btnSecondary} onPress={onEditarCardapio}>
-          <Text style={S.btnSecondaryText}>← Editar Cardápio</Text>
+          <Text style={S.btnSecondaryText}>Editar Cardápio</Text>
         </TouchableOpacity>
         <TouchableOpacity style={S.btnDanger} onPress={onNovoChurras}>
           <Text style={S.btnDangerText}>🔄 Novo Churras</Text>

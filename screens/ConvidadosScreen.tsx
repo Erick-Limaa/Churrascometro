@@ -159,7 +159,7 @@ export default function ConvidadosScreen({ nomeEvento, onVoltar, onAvancar }: Pr
       style={[S.btnPrimary, { marginHorizontal: 0, marginTop: 16, marginBottom: 16 }]}
       onPress={() => onAvancar(convidados)}
     >
-      <Text style={S.btnPrimaryText}>CONFIGURAR CARDÁPIO ({convidados.length}) ⚙️</Text>
+      <Text style={S.btnPrimaryText}>CONFIGURAR CARDÁPIO ({convidados.length}) 📖</Text>
     </TouchableOpacity>
   ) : null;
 
