@@ -8,6 +8,7 @@ import ConvidadosScreen from '../screens/ConvidadosScreen';
 import CardapioScreen, { CategoriaComSub } from '../screens/CardapioScreen';
 import ResultadoScreen from '../screens/ResultadoScreen';
 import HistoricoScreen from '../screens/HistoricoScreen';
+import SplashAnimadaScreen from '../screens/SplashAnimadaScreen';
 
 import {
   Convidado, ItemCardapio, Churras, ResultadoCalculo, CARDAPIO_DEFAULT,
@@ -18,6 +19,8 @@ type Tela = 'home' | 'convidados' | 'cardapio' | 'resultado' | 'historico';
 const STORAGE_KEY = '@churrascomentro_historico';
 
 export default function Index() {
+  const [splashVista, setSplashVista] = useState(false);
+
   // ── Estado global preservado entre telas ────────────────────────────────
   const [tela, setTela] = useState<Tela>('home');
   const [nomeEvento, setNomeEvento] = useState('');
@@ -46,20 +49,17 @@ export default function Index() {
     proximaTela.current  = proxTela;
     direcaoAnim.current  = avancando ? SCREEN_W : -SCREEN_W;
 
-    // Slide out da tela atual
     Animated.timing(slideAnim, {
       toValue: avancando ? -SCREEN_W * 0.3 : SCREEN_W * 0.3,
       duration: 200,
       easing: Easing.in(Easing.quad),
       useNativeDriver: true,
     }).start(() => {
-      // Após saída: posiciona nova tela fora e troca
       slideAnim.setValue(direcaoAnim.current);
       setTela(proxTela);
     });
   };
 
-  // useLayoutEffect roda ANTES do paint — anima entrada sem flick
   useLayoutEffect(() => {
     if (proximaTela.current === null) return;
     proximaTela.current = null;
@@ -160,7 +160,7 @@ export default function Index() {
     const itensSimples = simplesAtual.filter(i => i.ativo).map(item => {
       const qtd = item.qtdPorPessoa * totalEq;
       let qtdDisplay = '';
-      if (item.unidade === 'g')     qtdDisplay = qtd >= 1000 ? `${(qtd/1000).toFixed(1)} kg` : `${Math.ceil(qtd)} g`;
+      if (item.unidade === 'g')         qtdDisplay = qtd >= 1000 ? `${(qtd/1000).toFixed(1)} kg` : `${Math.ceil(qtd)} g`;
       else if (item.unidade === 'L')    qtdDisplay = `${qtd.toFixed(1)} L`;
       else if (item.unidade === 'lata') qtdDisplay = `${Math.ceil(qtd)} latas`;
       else if (item.unidade === 'pct')  qtdDisplay = `${Math.ceil(qtd)} pct`;
@@ -201,6 +201,11 @@ export default function Index() {
     setResultado(null);
     navegarPara('home');
   };
+
+  // ── Splash animada ───────────────────────────────────────────────────────
+  if (!splashVista) {
+    return <SplashAnimadaScreen onFim={() => setSplashVista(true)} />;
+  }
 
   // ── Renderiza a tela atual com animação ──────────────────────────────────
   const renderTela = () => {
