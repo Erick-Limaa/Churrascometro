@@ -8,6 +8,7 @@ import { C, CAT_CONFIG, Convidado, ResultadoCalculo } from '../constants';
 
 type Props = {
   nomeEvento: string;
+  dataEvento: string;
   convidados: Convidado[];
   resultado: ResultadoCalculo;
   onEditarCardapio: () => void;
@@ -209,7 +210,7 @@ function gerarDicas(resultado: ResultadoCalculo): Dica[] {
 // COMPONENTE PRINCIPAL
 // ═══════════════════════════════════════════════════════════════════════════
 export default function ResultadoScreen({
-  nomeEvento, convidados, resultado, onEditarCardapio, onNovoChurras,
+  nomeEvento, dataEvento, convidados, resultado, onEditarCardapio, onNovoChurras,
 }: Props) {
   const [nomeLocal, setNomeLocal] = useState(nomeEvento);
   const [editandoNome, setEditandoNome] = useState(false);
@@ -229,7 +230,7 @@ export default function ResultadoScreen({
   };
 
   const compartilhar = async () => {
-    let txt = `🔥 *${nomeLocal}* 🔥\n📅 ${new Date().toLocaleDateString('pt-BR')}\n`;
+    let txt = `🔥 *${nomeLocal}* 🔥\n📅 ${dataEvento}\n`;
     txt += `👥 ${resultado.total} pessoas`;
     if (resultado.adultos)      txt += ` · ${resultado.adultos} adultos`;
     if (resultado.criancas)     txt += ` · ${resultado.criancas} crianças`;

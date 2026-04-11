@@ -31,6 +31,7 @@ export default function Index() {
     CARDAPIO_DEFAULT.filter(i => !['carne', 'frango', 'linguica'].includes(i.id))
   );
   const [resultado, setResultado] = useState<ResultadoCalculo | null>(null);
+  const [dataEvento, setDataEvento] = useState(new Date().toLocaleDateString('pt-BR'));
   const [historico, setHistorico] = useState<Churras[]>([]);
 
   // ── Animação de transição (slide sem flick) ─────────────────────────────
@@ -109,7 +110,7 @@ export default function Index() {
     try {
       const novo: Churras = {
         id: Date.now().toString(), nome,
-        data: new Date().toLocaleDateString('pt-BR'),
+        data: dataEvento,
         totalPessoas: res.total,
         adultos: res.adultos, criancas: res.criancas, vegetarianos: res.vegetarianos,
         custoEstimado: res.custoEstimado,
@@ -214,7 +215,7 @@ export default function Index() {
         return (
           <HomeScreen
             historico={historico}
-            onAvancar={(nome, v) => { setNomeEvento(nome); setVerba(v); navegarPara('convidados'); }}
+            onAvancar={(nome, v, d) => { setNomeEvento(nome); setVerba(v); setDataEvento(d); navegarPara('convidados'); }}
             onHistorico={() => navegarPara('historico')}
           />
         );
@@ -241,6 +242,7 @@ export default function Index() {
         return resultado ? (
           <ResultadoScreen
             nomeEvento={nomeEvento}
+            dataEvento={dataEvento}
             convidados={convidados}
             resultado={resultado}
             onEditarCardapio={() => navegarPara('cardapio')}
