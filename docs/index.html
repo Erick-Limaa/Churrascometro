@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Política de Privacidade — Churrascômetro</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a0a00;
+      color: #c9a882;
+      min-height: 100vh;
+      padding: 0 16px 60px;
+    }
+
+    header {
+      text-align: center;
+      padding: 48px 16px 32px;
+      border-bottom: 1px solid #3d2510;
+      margin-bottom: 40px;
+    }
+
+    .flame { font-size: 56px; display: block; margin-bottom: 12px; }
+
+    header h1 {
+      font-size: 28px;
+      font-weight: 900;
+      color: #e85d04;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    header p {
+      font-size: 13px;
+      color: #8a6a50;
+      margin-top: 6px;
+      letter-spacing: 1px;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: #2d1a0a;
+      border: 1px solid #3d2510;
+      border-radius: 14px;
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+
+    .card h2 {
+      font-size: 15px;
+      font-weight: 800;
+      color: #f48c06;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card p {
+      font-size: 14px;
+      line-height: 1.8;
+      color: #c9a882;
+      margin-bottom: 10px;
+    }
+
+    .card p:last-child { margin-bottom: 0; }
+
+    .badge {
+      display: inline-block;
+      background: #81c78422;
+      color: #81c784;
+      border: 1px solid #81c784;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 12px;
+      margin-bottom: 16px;
+    }
+
+    .highlight {
+      background: #3d2510;
+      border-left: 3px solid #e85d04;
+      border-radius: 0 8px 8px 0;
+      padding: 12px 16px;
+      margin: 12px 0;
+      font-size: 14px;
+      line-height: 1.7;
+      color: #c9a882;
+    }
+
+    .contact-link {
+      color: #e85d04;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .contact-link:hover { text-decoration: underline; }
+
+    footer {
+      text-align: center;
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid #3d2510;
+      font-size: 12px;
+      color: #5a3a20;
+    }
+
+    footer span { color: #e85d04; }
+  </style>
+</head>
+<body>
+  <header>
+    <span class="flame">🔥</span>
+    <h1>Churrascômetro</h1>
+    <p>Política de Privacidade</p>
+  </header>
+
+  <div class="container">
+
+    <div class="card">
+      <span class="badge">✅ Sem coleta de dados pessoais</span>
+      <h2>📋 Visão Geral</h2>
+      <p>
+        O <strong style="color:#f48c06">Churrascômetro</strong> é um aplicativo de organização
+        de churrascos desenvolvido para Android. Esta política descreve como o aplicativo
+        lida com as informações inseridas pelos usuários.
+      </p>
+      <p>
+        Sua privacidade é importante para nós. O Churrascômetro foi desenvolvido com o
+        princípio de coletar o mínimo possível de dados e nunca compartilhá-los com terceiros.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>💾 Dados Armazenados</h2>
+      <p>
+        O aplicativo armazena localmente no seu dispositivo as seguintes informações,
+        exclusivamente para o funcionamento do app:
+      </p>
+      <div class="highlight">
+        • Nomes dos eventos criados pelo usuário<br/>
+        • Nomes dos convidados adicionados<br/>
+        • Configurações do cardápio (itens, preços e quantidades)<br/>
+        • Histórico dos churras calculados<br/>
+        • Estado do checklist de compras
+      </div>
+      <p>
+        Todos esses dados ficam armazenados <strong style="color:#f48c06">apenas no seu
+        dispositivo</strong>, utilizando o AsyncStorage do React Native.
+        Nenhuma informação é enviada para servidores externos ou terceiros.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>🚫 O Que Não Coletamos</h2>
+      <p>O Churrascômetro <strong style="color:#f48c06">não coleta</strong>:</p>
+      <div class="highlight">
+        • Dados pessoais identificáveis (nome, e-mail, CPF, etc.)<br/>
+        • Localização geográfica<br/>
+        • Contatos do dispositivo<br/>
+        • Dados de uso ou analytics<br/>
+        • Informações financeiras<br/>
+        • Cookies ou rastreadores
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🌐 Conexão com Internet</h2>
+      <p>
+        O aplicativo pode solicitar acesso à internet para a funcionalidade de
+        compartilhamento via WhatsApp e outros aplicativos de mensagem.
+        Essa funcionalidade utiliza apenas a API nativa de compartilhamento do
+        Android e não envia dados para servidores do Churrascômetro.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>🗑️ Exclusão de Dados</h2>
+      <p>
+        Todos os dados armazenados pelo aplicativo podem ser excluídos a qualquer momento:
+      </p>
+      <div class="highlight">
+        • <strong>Histórico:</strong> use o botão "Limpar histórico" dentro do app<br/>
+        • <strong>Todos os dados:</strong> desinstale o aplicativo do seu dispositivo
+      </div>
+      <p>
+        A desinstalação do aplicativo remove completamente todos os dados armazenados localmente.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>👶 Crianças</h2>
+      <p>
+        O Churrascômetro não é direcionado a crianças menores de 13 anos e não coleta
+        intencionalmente informações de menores de idade.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>🔄 Alterações nesta Política</h2>
+      <p>
+        Esta política pode ser atualizada periodicamente. Qualquer alteração significativa
+        será comunicada por meio de atualização do aplicativo na Google Play Store.
+        A data da última atualização está indicada no rodapé desta página.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>📬 Contato</h2>
+      <p>
+        Dúvidas sobre esta política de privacidade? Entre em contato:
+      </p>
+      <div class="highlight">
+        E-mail:
+        <a class="contact-link" href="mailto:contato@bughammer.com.br">
+          contato@bughammer.com.br
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>Última atualização: Abril de 2026</p>
+    <p style="margin-top:8px">Feito com <span>🔥</span> por BugHammer Studios</p>
+  </footer>
+</body>
+</html>
