@@ -1,10 +1,17 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
-  View, Text, TouchableOpacity, ScrollView, StatusBar,
-  Share, StyleSheet, Modal, TextInput,
+  Modal,
+  ScrollView,
+  Share,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { S } from '../constants/styles';
 import { C, CAT_CONFIG, Convidado, ResultadoCalculo } from '../constants';
+import { S } from '../constants/styles';
 
 type Props = {
   nomeEvento: string;
@@ -230,7 +237,7 @@ export default function ResultadoScreen({
   };
 
   const compartilhar = async () => {
-    let txt = `🔥 *${nomeLocal}* 🔥\n📅 ${dataEvento}\n`;
+    let txt = `🔥 *${nomeLocal.trim()}* 🔥\n📅 ${dataEvento}\n`;
     txt += `👥 ${resultado.total} pessoas`;
     if (resultado.adultos)      txt += ` · ${resultado.adultos} adultos`;
     if (resultado.criancas)     txt += ` · ${resultado.criancas} crianças`;

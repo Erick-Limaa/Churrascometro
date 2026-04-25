@@ -1,12 +1,19 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity, FlatList,
-  StatusBar, Alert, Vibration, KeyboardAvoidingView,
-  Platform, Modal, StyleSheet,
+  Alert,
+  FlatList,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  Text, TextInput, TouchableOpacity,
+  Vibration,
+  View,
 } from 'react-native';
 import TopBar from '../components/TopBar';
+import { C, CAT_CONFIG, Categoria, Convidado } from '../constants';
 import { S } from '../constants/styles';
-import { C, Convidado, Categoria, CAT_CONFIG } from '../constants';
 
 type Props = {
   nomeEvento: string;
@@ -157,7 +164,7 @@ export default function ConvidadosScreen({ nomeEvento, convidadosIniciais, onVol
       style={[S.btnPrimary, { marginHorizontal: 0, marginTop: 16, marginBottom: 16 }]}
       onPress={() => onAvancar(convidados)}
     >
-      <Text style={S.btnPrimaryText}>CONFIGURAR CARDÁPIO ({convidados.length}) ⚙️</Text>
+      <Text style={S.btnPrimaryText}>CONFIGURAR CARDÁPIO ({convidados.length})</Text>
     </TouchableOpacity>
   ) : null;
 

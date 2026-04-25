@@ -1,13 +1,17 @@
+import { Ionicons } from '@expo/vector-icons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useState } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity,
-  ScrollView, StatusBar, Alert, KeyboardAvoidingView,
-  Platform, StyleSheet, Modal,
+  Alert, KeyboardAvoidingView,
+  Modal,
+  Platform,
+  ScrollView, StatusBar,
+  StyleSheet,
+  Text, TextInput, TouchableOpacity,
+  View,
 } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { Ionicons } from '@expo/vector-icons';
-import { S } from '../constants/styles';
 import { C, Churras } from '../constants';
+import { S } from '../constants/styles';
 
 type Props = {
   historico: Churras[];
@@ -89,7 +93,7 @@ export default function HomeScreen({ historico, onAvancar, onHistorico }: Props)
             onAvancar(nomeEvento, verba, formatarData(data));
           }}
         >
-          <Text style={S.btnPrimaryText}>MONTAR A LISTA 🥩</Text>
+          <Text style={S.btnPrimaryText}>MONTAR A LISTA</Text>
         </TouchableOpacity>
 
         {historico.length > 0 && (
