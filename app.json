@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "churrascometro",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    /* "newArchEnabled": true, */
     "ios": {
       "supportsTablet": true
     },
@@ -18,8 +18,16 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "permissions": [
+        "android.permission.INTERNET",
+        "android.permission.VIBRATE"
+      ],
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      /* "edgeToEdgeEnabled": true, */
+      "predictiveBackGestureEnabled": false,
+      "package": "com.dereguis.churrascometro"
     },
     "web": {
       "output": "static",
@@ -30,7 +38,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "foguerav2.mp4",
+          "image": "./assets/images/foguera.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
@@ -38,12 +46,20 @@
             "backgroundColor": "#000000"
           }
         }
+        
       ],
+      
       "@react-native-community/datetimepicker"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "6ca75feb-42e8-4379-ae84-086ad48724bb"
+      }
     }
   }
 }
