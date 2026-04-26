@@ -13,10 +13,10 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "backgroundColor": "#281a12",
+        "foregroundImage": "./assets/images/foreground.churascometro.png",
+        "backgroundImage": "./assets/images/background.churascometro.png",
+        "monochromeImage": "./assets/images/monochrome.churascometro.png"
       },
       "permissions": [
         "android.permission.INTERNET",
