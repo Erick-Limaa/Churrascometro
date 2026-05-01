@@ -25,6 +25,22 @@ export default function HomeScreen({ historico, onAvancar, onHistorico }: Props)
   const [data, setData] = useState(new Date());
   const [mostrarPicker, setMostrarPicker] = useState(false);
 
+  // Formata automaticamente como moeda brasileira: 1.500,00
+  const formatarVerba = (texto: string) => {
+    const apenasNumeros = texto.replace(/\D/g, '');
+    if (!apenasNumeros) { setVerba(''); return; }
+    const centavos = parseInt(apenasNumeros, 10);
+    const formatado = (centavos / 100).toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+    setVerba(formatado);
+  };
+
+  // Converte valor formatado para número puro para o cálculo
+  const verbaNumerica = () =>
+    parseFloat(verba.replace(/\./g, '').replace(',', '.')) || 0;
+
   const formatarData = (d: Date) =>
     d.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
 
@@ -72,17 +88,21 @@ export default function HomeScreen({ historico, onAvancar, onHistorico }: Props)
           >
             <Ionicons name="time-outline" size={14} color={C.brasa} />
             <Text style={ls.dataTexto}>{formatarData(data)}</Text>
+            <Text style={ls.dataEditar}>alterar</Text>
           </TouchableOpacity>
 
-          <Text style={S.cardLabel}>💰 Verba Total (R$)</Text>
-          <TextInput
-            style={S.input}
-            placeholder="Ex: 500,00  (opcional)"
-            placeholderTextColor="#8a6a50"
-            value={verba}
-            onChangeText={setVerba}
-            keyboardType="numeric"
-          />
+          <Text style={S.cardLabel}>💰 Verba Total</Text>
+          <View style={ls.verbRow}>
+            <Text style={ls.verbPrefix}>R$</Text>
+            <TextInput
+              style={[S.input, { flex: 1 }]}
+              placeholder="0,00"
+              placeholderTextColor="#8a6a50"
+              value={verba}
+              onChangeText={formatarVerba}
+              keyboardType="numeric"
+            />
+          </View>
           <Text style={S.inputHint}>Deixe em branco para calcular só as quantidades</Text>
         </View>
 
@@ -90,7 +110,7 @@ export default function HomeScreen({ historico, onAvancar, onHistorico }: Props)
           style={S.btnPrimary}
           onPress={() => {
             if (!nomeEvento.trim()) { Alert.alert('Atenção', 'Dê um nome pro seu churras!'); return; }
-            onAvancar(nomeEvento, verba, formatarData(data));
+            onAvancar(nomeEvento, String(verbaNumerica()), formatarData(data));
           }}
         >
           <Text style={S.btnPrimaryText}>MONTAR A LISTA</Text>
@@ -98,7 +118,7 @@ export default function HomeScreen({ historico, onAvancar, onHistorico }: Props)
 
         {historico.length > 0 && (
           <TouchableOpacity style={[S.btnSecondary, { marginHorizontal: 16 }]} onPress={onHistorico}>
-            <Text style={S.btnSecondaryText}>📜 Histórico ({historico.length})</Text>
+            <Text style={S.btnSecondaryText}>Histórico ({historico.length})</Text>
           </TouchableOpacity>
         )}
       </ScrollView>
@@ -147,6 +167,17 @@ const ls = StyleSheet.create({
   inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  verbRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  verbPrefix: {
+    color: '#f48c06',
+    fontSize: 15,
+    fontWeight: '800',
+    paddingBottom: 2,
   },
   calendarBtn: {
     backgroundColor: C.fumo,
