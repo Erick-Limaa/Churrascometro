@@ -382,7 +382,7 @@ export default function ResultadoScreen({
           <Text style={S.btnShareText}>📤 Compartilhar via WhatsApp</Text>
         </TouchableOpacity>
         <TouchableOpacity style={S.btnSecondary} onPress={onEditarCardapio}>
-          <Text style={S.btnSecondaryText}>← Editar Cardápio</Text>
+          <Text style={S.btnSecondaryText}>Editar Cardápio</Text>
         </TouchableOpacity>
         <TouchableOpacity style={S.btnDanger} onPress={onNovoChurras}>
           <Text style={S.btnDangerText}>🔄 Novo Churras</Text>
