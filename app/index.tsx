@@ -1,17 +1,22 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { BackHandler, Alert, Animated, Dimensions, Easing, View, StyleSheet } from 'react-native';
-import { useLayoutEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Alert, Animated, BackHandler, Dimensions, Easing, StyleSheet, View } from 'react-native';
 
-import HomeScreen from '../screens/HomeScreen';
-import ConvidadosScreen from '../screens/ConvidadosScreen';
 import CardapioScreen, { CategoriaComSub } from '../screens/CardapioScreen';
-import ResultadoScreen from '../screens/ResultadoScreen';
+import ConvidadosScreen from '../screens/ConvidadosScreen';
 import HistoricoScreen from '../screens/HistoricoScreen';
+import HomeScreen from '../screens/HomeScreen';
+import ResultadoScreen from '../screens/ResultadoScreen';
 import SplashAnimadaScreen from '../screens/SplashAnimadaScreen';
 
+
+import { enviarMensagem } from '@/services/gemini';
+
 import {
-  Convidado, ItemCardapio, Churras, ResultadoCalculo, CARDAPIO_DEFAULT,
+  CARDAPIO_DEFAULT,
+  Churras,
+  Convidado, ItemCardapio,
+  ResultadoCalculo,
 } from '../constants';
 
 type Tela = 'home' | 'convidados' | 'cardapio' | 'resultado' | 'historico';
@@ -21,7 +26,7 @@ const STORAGE_KEY = '@churrascomentro_historico';
 export default function Index() {
   const [splashVista, setSplashVista] = useState(false);
 
-  // ── Estado global preservado entre telas ────────────────────────────────
+  
   const [tela, setTela] = useState<Tela>('home');
   const [nomeEvento, setNomeEvento] = useState('');
   const [verba, setVerba] = useState('');
@@ -34,7 +39,13 @@ export default function Index() {
   const [dataEvento, setDataEvento] = useState(new Date().toLocaleDateString('pt-BR'));
   const [historico, setHistorico] = useState<Churras[]>([]);
 
-  // ── Animação de transição (slide sem flick) ─────────────────────────────
+ 
+  const [chat, setChat] = useState<{ role: string; text: string }[]>([]);
+  const [mensagem, setMensagem] = useState('');
+  const [digitando, setDigitando] = useState(false);
+  const [dots, setDots] = useState('.');
+
+  
   const slideAnim  = useRef(new Animated.Value(0)).current;
   const SCREEN_W   = Dimensions.get('window').width;
   const ORDEM: Tela[] = ['home', 'convidados', 'cardapio', 'resultado', 'historico'];
@@ -130,6 +141,127 @@ export default function Index() {
     await AsyncStorage.removeItem(STORAGE_KEY);
   };
 
+
+  useEffect(() => {
+    if (!digitando) {
+      setDots('.');
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setDots((prev) => (prev.length >= 3 ? '.' : prev + '.'));
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, [digitando]);
+
+  const enviarChat = async () => {
+    if (!mensagem.trim() || !resultado) return;
+
+    const texto = mensagem.trim();
+
+    setChat(prev => [
+      ...prev,
+      { role: 'user', text: texto }
+    ]);
+
+    setMensagem('');
+    setDigitando(true);
+
+    try {
+      const carnesEscolhidas = resultado.itens
+        .map((item: any) => `${item.label}: ${item.qtdDisplay}`)
+        .join(', ');
+
+      const contexto = `
+Você é um assistente de churrasco.
+Responda em português do Brasil, com emojis.
+
+REGRAS IMPORTANTES:
+- Responda apenas em texto simples
+- Não use Markdown
+- Não use *
+- Não use **
+- Não use listas
+- Não use formatação
+
+Responda como se fosse uma mensagem normal de WhatsApp.
+
+Dados:
+Evento: ${nomeEvento}
+Pessoas: ${resultado.total}
+Carnes e itens: ${carnesEscolhidas}
+
+Pergunta:
+${texto}
+`;
+
+      const resposta = await enviarMensagem(contexto);
+
+      setChat(prev => [
+        ...prev,
+        { role: 'bot', text: resposta }
+      ]);
+    } catch {
+      setChat(prev => [
+        ...prev,
+        { role: 'bot', text: 'Erro ao falar com a IA' }
+      ]);
+    } finally {
+      setDigitando(false);
+    }
+  };
+
+  const gerarDicasAutomaticas = async (resultadoAtual: ResultadoCalculo) => {
+    setDigitando(true);
+    try {
+      const carnesEscolhidas = resultadoAtual.itens
+        .map((item: any) => `${item.label}: ${item.qtdDisplay}`)
+        .join(', ');
+
+      const prompt = `
+Você é um assistente de churrasco.
+Responda em português do Brasil, com emojis.
+
+REGRAS IMPORTANTES:
+- Responda apenas em texto simples
+- Não use Markdown
+- Não use *
+- Não use **
+- Não use listas
+- Não use formatação
+
+Responda como se fosse uma mensagem normal de WhatsApp.
+
+Dados:
+Evento: ${nomeEvento}
+Pessoas: ${resultadoAtual.total}
+Adultos: ${resultadoAtual.adultos}
+Crianças: ${resultadoAtual.criancas}
+Vegetarianos: ${resultadoAtual.vegetarianos}
+Carnes e itens: ${carnesEscolhidas}
+
+Dê dicas curtas sobre:
+- ordem da grelha
+- tempero
+- tempo de preparo
+- uma dica extra
+`;
+
+      const resposta = await enviarMensagem(prompt);
+
+      setChat([
+        { role: 'bot', text: resposta }
+      ]);
+    } catch {
+      setChat([
+        { role: 'bot', text: 'Não consegui gerar as dicas automáticas agora 😢' }
+      ]);
+    } finally {
+      setDigitando(false);
+    }
+  };
+
   // ── Calcular ─────────────────────────────────────────────────────────────
   const calcular = (simplesAtual: ItemCardapio[], categoriasAtual: CategoriaComSub[]) => {
     setCardapioSimples(simplesAtual);
@@ -192,6 +324,11 @@ export default function Index() {
 
     salvarNoHistorico(res, nomeEvento);
     setResultado(res);
+    
+  
+    setChat([]);
+    gerarDicasAutomaticas(res);
+    
     navegarPara('resultado');
   };
 
@@ -200,15 +337,20 @@ export default function Index() {
     setConvidados([]); setCategorias([]);
     setCardapioSimples(CARDAPIO_DEFAULT.filter(i => !['carne', 'frango', 'linguica'].includes(i.id)));
     setResultado(null);
+    
+
+    setChat([]);
+    setMensagem('');
+    
     navegarPara('home');
   };
 
-  // ── Splash animada ───────────────────────────────────────────────────────
+
   if (!splashVista) {
     return <SplashAnimadaScreen onFim={() => setSplashVista(true)} />;
   }
 
-  // ── Renderiza a tela atual com animação ──────────────────────────────────
+
   const renderTela = () => {
     switch (tela) {
       case 'home':
@@ -247,6 +389,13 @@ export default function Index() {
             resultado={resultado}
             onEditarCardapio={() => navegarPara('cardapio')}
             onNovoChurras={resetar}
+       
+            chat={chat}
+            mensagem={mensagem}
+            setMensagem={setMensagem}
+            enviarChat={enviarChat}
+            digitando={digitando}
+            dots={dots}
           />
         ) : null;
       case 'historico':
